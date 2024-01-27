@@ -3,12 +3,14 @@ import { errorMiddleware } from "./middlewares/error";
 import { connectDB } from "./utils/features";
 import NodeCache from "node-cache";
 import { config } from "dotenv";
+import morgan from "morgan";
 
 // importing Routes
 import userRoute from "./routes/user";
 import productRoute from "./routes/products";
 import orderRoute from "./routes/order";
-import morgan from "morgan";
+import paymentRoute from "./routes/payment";
+
 
 config({
     path:"./.env",
@@ -34,6 +36,8 @@ app.get("/",(req,res)=>{
 app.use("/api/v1/user",userRoute);
 app.use("/api/v1/product",productRoute);
 app.use("/api/v1/order",orderRoute);
+app.use("/api/v1/payment",paymentRoute);
+
 
 app.use("/uploads",express.static("uploads"));
 app.use(errorMiddleware);
