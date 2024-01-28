@@ -10,6 +10,7 @@ import userRoute from "./routes/user";
 import productRoute from "./routes/products";
 import orderRoute from "./routes/order";
 import paymentRoute from "./routes/payment";
+import dashboardRoute from "./routes/stats";
 
 
 config({
@@ -37,6 +38,7 @@ app.use("/api/v1/user",userRoute);
 app.use("/api/v1/product",productRoute);
 app.use("/api/v1/order",orderRoute);
 app.use("/api/v1/payment",paymentRoute);
+app.use("/api/v1/dashboard",dashboardRoute)
 
 
 app.use("/uploads",express.static("uploads"));
