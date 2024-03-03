@@ -8,7 +8,7 @@ export interface NewUserRequestBody{
     gender:string,
     role:string,
     _id:string,
-    dob:Date
+    dob:Date,
 }
 
 // product

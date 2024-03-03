@@ -3,6 +3,7 @@ import { InvalidateCacheProps, OrderItemType } from "../types/types";
 import { Product } from "../models/product";
 import { myCache } from "../app";
 import { Order } from "../models/order";
+import { Response } from "express";
 
 // connection  to DataBase
 export const connectDB = (uri: string) => {
@@ -66,3 +67,70 @@ export const reduceStock = async (orderItems: OrderItemType[]) => {
     await product.save();
   }
 };
+
+
+// Additional Functionality of token using jwt
+
+export type userDetails={
+  _id?:string, // uuid from firebase
+  name?:string,
+  email:string,
+  photo?:string,
+  role?:string,
+  gender?:string,
+  dob?:Date,
+  createdAt?:Date,
+  updatedAt?:Date
+  password?:string
+  getJWTToken:()=> string
+}
+
+// generate-Token using Jwt 
+export const sendToken = (user:userDetails,statusCode:number,res:Response) => {
+
+  const token = user.getJWTToken(); 
+
+  // options for cookie
+  const option = {
+    expires:new Date(
+      Date.now()+5*24*60*1000
+    ),
+    httpOnly:true
+  }
+
+  res.status(statusCode).cookie("token",token,option).json({
+    success:true,
+    user,
+    token
+  })
+}
+
+// email-sent using node-mailer
+import nodeMailer from "nodemailer";
+
+export type emailOption ={
+  email:string,
+  subject:string,
+  message:string
+}
+
+export const sendEmail = async(options:emailOption) =>{
+
+  const transporter = nodeMailer.createTransport({
+    service:"gmail",
+    auth:{
+      user:"backendtesting1999@gmail.com",
+      pass:"P@ssw0rd"
+    }
+  })
+
+  const mailOptions = {
+    from:"backendtesting1999@gmail.com",
+    to:options.email,
+    subject:options.subject,
+    text:options.message
+  };
+
+  await transporter.sendMail(mailOptions);
+  return true;
+}

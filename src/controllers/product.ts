@@ -164,7 +164,7 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
     console.log("Products Photo Deleted");
   });
 
-  await Product.deleteOne();
+  await product.deleteOne();
 
   await invalidateCache({ product: true, productId: String(product._id) });
 
@@ -176,6 +176,7 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
 
 export const getAllProducts = TryCatch(
   async (req: Request<{}, {}, {}, SearchRequestQuery>, res, next) => {
+    
     const { search, sort, category, price } = req.query;
 
     const page = Number(req.query.page) || 1;
@@ -209,16 +210,12 @@ export const getAllProducts = TryCatch(
      */
 
     const [products, filteredOnlyProduct] = await Promise.all([
-      Product.find({ baseQuery })
+      Product.find(baseQuery)
         .sort(sort && { price: sort === "asc" ? 1 : -1 })
         .limit(limit)
         .skip(skip),
       Product.find(baseQuery),
     ]);
-
-    console.log(products);
-    console.log("break");
-    console.log(filteredOnlyProduct);
 
     const totalPage = Math.ceil(filteredOnlyProduct.length / limit);
 
