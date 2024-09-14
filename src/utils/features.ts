@@ -5,7 +5,7 @@ import { myCache } from "../app";
 import { Order } from "../models/order";
 import { Response } from "express";
 
-// connection  to DataBase
+// Connection to Database
 export const connectDB = (uri: string) => {
   mongoose
     .connect(uri, {
@@ -19,7 +19,7 @@ export const connectDB = (uri: string) => {
     });
 };
 
-// clear cached
+// Clear Cached
 export const invalidateCache = async ({
   product,
   order,
@@ -35,12 +35,12 @@ export const invalidateCache = async ({
       "all-products",
     ];
 
-    if(typeof productId === "string"){
+    if (typeof productId === "string") {
       productKeys.push(`product-${productId}`);
     }
 
-    if(typeof productId === "object"){
-      productId.forEach((i)=> productKeys.push(`product-${i}`));
+    if (typeof productId === "object") {
+      productId.forEach((i) => productKeys.push(`product-${i}`));
     }
 
     myCache.del(productKeys);
@@ -49,15 +49,15 @@ export const invalidateCache = async ({
   if (order) {
     const orderKeys: string[] = [
       "all-orders",
-       `my-orders-${userId}`,
-        `order-${orderId}`
-      ];
+      `my-orders-${userId}`,
+      `order-${orderId}`
+    ];
 
     myCache.del(orderKeys);
   }
 };
 
-// Reduce Product when new Order is Placed
+// Reduce Product Stock when New Order is Placed
 export const reduceStock = async (orderItems: OrderItemType[]) => {
   for (let i = 0; i < orderItems.length; i++) {
     const order = orderItems[i];
@@ -68,69 +68,62 @@ export const reduceStock = async (orderItems: OrderItemType[]) => {
   }
 };
 
+// Additional Functionality of Token using JWT
+// export type UserDetails = {
+//   _id?: string; // uuid from firebase
+//   name?: string;
+//   email: string;
+//   photo?: string;
+//   role?: string;
+//   gender?: string;
+//   dob?: Date;
+//   createdAt?: Date;
+//   updatedAt?: Date;
+//   getJWTToken: () => string;
+// }
 
-// Additional Functionality of token using jwt
+// // Generate Token using JWT
+// export const sendToken = (user: UserDetails, statusCode: number, res: Response) => {
+//   const token = user.getJWTToken(); 
 
-export type userDetails={
-  _id?:string, // uuid from firebase
-  name?:string,
-  email:string,
-  photo?:string,
-  role?:string,
-  gender?:string,
-  dob?:Date,
-  createdAt?:Date,
-  updatedAt?:Date
-  password?:string
-  getJWTToken:()=> string
-}
+//   // Options for cookie
+//   const option = {
+//     expires: new Date(Date.now() + 5 * 24 * 60 * 1000),
+//     httpOnly: true
+//   }
 
-// generate-Token using Jwt 
-export const sendToken = (user:userDetails,statusCode:number,res:Response) => {
+//   res.status(statusCode).cookie("token", token, option).json({
+//     success: true,
+//     user,
+//     token
+//   })
+// }
 
-  const token = user.getJWTToken(); 
+// // Email Sent using NodeMailer
+// import nodeMailer from "nodemailer";
 
-  // options for cookie
-  const option = {
-    expires:new Date(
-      Date.now()+5*24*60*1000
-    ),
-    httpOnly:true
-  }
+// export type EmailOption = {
+//   email: string;
+//   subject: string;
+//   message: string;
+// }
 
-  res.status(statusCode).cookie("token",token,option).json({
-    success:true,
-    user,
-    token
-  })
-}
+// export const sendEmail = async (options: EmailOption) => {
+//   const transporter = nodeMailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: "backendtesting1999@gmail.com",
+//       pass: "P@ssw0rd"
+//     }
+//   })
 
-// email-sent using node-mailer
-import nodeMailer from "nodemailer";
+//   const mailOptions = {
+//     from: "backendtesting1999@gmail.com",
+//     to: options.email,
+//     subject: options.subject,
+//     text: options.message
+//   };
 
-export type emailOption ={
-  email:string,
-  subject:string,
-  message:string
-}
-
-export const sendEmail = async(options:emailOption) =>{
-
-  const transporter = nodeMailer.createTransport({
-    service:"gmail",
-    auth:{
-      user:"backendtesting1999@gmail.com",
-      pass:"P@ssw0rd"
-    }
-  })
-
-  const mailOptions = {
-    from:"backendtesting1999@gmail.com",
-    to:options.email,
-    subject:options.subject,
-    text:options.message
-  };
-
-  await transporter.sendMail(mailOptions);
-  return true;
-}
+//   await transporter.sendMail(mailOptions);
+//   return true;
+// }

@@ -14,6 +14,8 @@ export const adminOnly = TryCatch(async(req,res,next)=>{
     if(user.role !== "admin"){
         return next(new ErrorHandler("User Not corrcet accessed",400));
     }
+
+    console.log("admin")
     
     next();
 })

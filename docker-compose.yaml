@@ -1,0 +1,27 @@
+services:
+    mongoserver:
+       image: mongo
+       container_name: mongodb-server
+       enviroment:
+          - MONGO_INITDB_ROOT_USERNAME=root
+          - MONGO_INITDB_ROOT_PASSWORD=root
+       volumes:
+          - ~/mongo/data:/data/db
+       networks:
+          - ecommerce-network
+
+
+    backendapi:
+       image: gerryyadav/ecommerce-backend
+       container_name: ecommerce-backend
+       ports: 
+         - '5513:5513'
+       networks:
+         - ecommerce-network
+       env_file: .env
+       depends_on:
+         - mongoserver
+
+networks:
+   ecommerce-network:
+      driver: bridge

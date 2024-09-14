@@ -1,13 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import validator from "validator";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
 interface Iuser extends Document {
   _id: string;
   name: string;
-  password:string,
   email: string;
   photo: string;
   role: "admin" | "user";
@@ -15,11 +12,10 @@ interface Iuser extends Document {
   dob: Date;
   createdAt: Date;
   updatedAt: Date;
-  comparePassword: (enterPassword: string) => Promise<boolean>;
   getJWTToekn: () => string;
   resetPasswordToken?: string;
   resetPasswordExpire?: string;
-  getResetPasswordToken:()=> string
+  getResetPasswordToken: () => string;
 }
 
 const schema = new mongoose.Schema(
@@ -32,15 +28,9 @@ const schema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter Name"],
     },
-    password: {
-      type: String,
-      required: [true, "Please enter your password"],
-      minLength: [8, "password should be greater than 8"],
-      select: false,
-    },
     email: {
       type: String,
-      unique: [true, "Email already Exist"],
+      unique: [true, "Email already Exists"],
       required: [true, "Please enter email"],
       validate: validator.default.isEmail,
     },
@@ -77,45 +67,28 @@ const schema = new mongoose.Schema(
 schema.virtual("age").get(function () {
   const today = new Date();
   const dob = this.dob;
-  let age = today.getFullYear() - this.dob.getFullYear();
+  let age = today.getFullYear() - dob.getFullYear();
 
   if (
     today.getMonth() < dob.getMonth() ||
     (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
-  )
+  ) {
     age--;
+  }
 
   return age;
 });
 
-// generate-jwt-Token
+// Generate JWT Token
+// You need to define this method if you plan to use it
+// schema.methods.getJWTToken = function (): string {
+//   return jwt.sign({ id: this._id }, "your_jwt_secret_key", {
+//     expiresIn: '1h', // Set expiration as per your requirement
+//   });
+// };
 
-schema.methods.getJWTToken = function () {
-  return jwt.sign({ id: this._id }, "hxjshdshdsshdu", {
-    expiresIn: 5,
-  });
-};
-
-// hash-password
-
-schema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-
-  this.password = await bcrypt.hash(this.password, 10);
-});
-
-// compare-password while Login
-
-schema.methods.comparePassword = async function (
-  enterPassword: string
-): Promise<boolean> {
-  return await bcrypt.compare(enterPassword, this.password);
-};
-
-// generating resetPassword Token(until next Login)
-schema.methods.getResetPasswordToken = function ():string {
+// Generate Reset Password Token
+schema.methods.getResetPasswordToken = function (): string {
   const resetToken = crypto.randomBytes(20).toString("hex");
 
   this.resetPasswordToken = crypto

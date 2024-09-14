@@ -174,6 +174,8 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
   });
 });
 
+// Todo - do this api using aggregation
+
 export const getAllProducts = TryCatch(
   async (req: Request<{}, {}, {}, SearchRequestQuery>, res, next) => {
     
@@ -210,7 +212,7 @@ export const getAllProducts = TryCatch(
      */
 
     const [products, filteredOnlyProduct] = await Promise.all([
-      Product.find(baseQuery)
+      Product.find(baseQuery)  
         .sort(sort && { price: sort === "asc" ? 1 : -1 })
         .limit(limit)
         .skip(skip),

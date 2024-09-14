@@ -114,7 +114,7 @@ export const getSingleOrder = TryCatch(async (req, res, next) => {
 });
 
 // update-status
-export const processOrder = TryCatch(async (req, res, next) => {
+export const processOrder = TryCatch(async (req, res, next) => { 
   const { id } = req.params;
 
   const order = await Order.findById(id);

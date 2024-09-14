@@ -8,6 +8,7 @@ import cors from "cors";
 import Stripe from "stripe";
 
 // importing Routes
+import healthCheck from "./routes/health";
 import userRoute from "./routes/user";
 import productRoute from "./routes/products";
 import orderRoute from "./routes/order";
@@ -29,6 +30,7 @@ connectDB(mongoURI);
 
 // Payment-Gateway
 export const stripe = new Stripe(stripeKey);
+
 // Use Caching 
 export const myCache = new NodeCache();
 
@@ -43,6 +45,7 @@ app.get("/", (req, res) => {
 });
 
 // using Routes
+app.use("/api/v1/health", healthCheck);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
